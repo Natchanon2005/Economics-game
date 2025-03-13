@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public struct CameraInput
@@ -8,23 +9,17 @@ public struct CameraInput
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private float sensitivity = 0.1f;
-    [SerializeField] private float bobFrequency = 1.5f;
-    [SerializeField] private float bobAmplitude = 0.05f;
-    [SerializeField] private float crouchBobAmplitude = 0.02f;
-    [SerializeField] private float bobSpeedMultiplier = 0.3f;
-
     private Vector3 _eulerAngles;
-    private float _bobTimer;
-    private Transform _target;
+    
+    // New field for current Outline
+    private Outline currentOutline;
 
     public void Initialize(Transform target)
     {
         transform.position = target.position;
         transform.rotation = target.rotation;
-        transform.eulerAngles = _eulerAngles = target.eulerAngles;
-        _target = target;
-
-        Debug.Log($"Player start position: {gameObject.transform.position}");
+        _eulerAngles = target.eulerAngles;
+        transform.eulerAngles = _eulerAngles;
     }
 
     public void UpdateRotation(CameraInput input)
@@ -37,20 +32,45 @@ public class PlayerCamera : MonoBehaviour
     {
         transform.position = target.position;
     }
-
-    public void UpdateHeadBobbing(float deltaTime, float speed, bool isCrouching)
+    
+    // New method to update outline based on camera view
+    void Update()
     {
-        if (speed > 0.1f)
+        // Cast a ray from camera's position in its forward direction
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit,  5f))
         {
-            _bobTimer += deltaTime * bobFrequency * (speed * bobSpeedMultiplier);
-            float amplitude = isCrouching ? crouchBobAmplitude : bobAmplitude;
-            float bobOffset = Mathf.Sin(_bobTimer) * amplitude;
-            transform.localPosition = new Vector3(transform.localPosition.x, _target.localPosition.y + bobOffset, transform.localPosition.z);
+            Outline outline = hit.transform.GetComponent<Outline>();
+            if (outline != null)
+            {
+                // If a new Outline is hit, disable the previous one
+                if (currentOutline != outline)
+                {
+                    if (currentOutline != null)
+                    {
+                        currentOutline.enabled = false;
+                    }
+                    currentOutline = outline;
+                }
+                currentOutline.enabled = true;
+            }
+            else
+            {
+                if (currentOutline != null)
+                {
+                    currentOutline.enabled = false;
+                    currentOutline = null;
+                }
+            }
         }
         else
         {
-            _bobTimer = 0;
-            transform.localPosition = new Vector3(transform.localPosition.x, _target.localPosition.y, transform.localPosition.z);
+            if (currentOutline != null)
+            {
+                currentOutline.enabled = false;
+                currentOutline = null;
+            }
         }
     }
 }

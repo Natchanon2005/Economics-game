@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     [Space]
     [SerializeField] private CameraSpring cameraSpring;
     [SerializeField] private CameraLean cameraLean;
+    // Added field for head bobbing integration
+    [SerializeField] private CameraHeadBobbing cameraHeadBobbing;
 
     private PlayerInputActions _inputActions;
 
@@ -46,7 +48,10 @@ public class Player : MonoBehaviour
             cameraTarget.up
         );
 
-        playerCamera.UpdateHeadBobbing(deltaTime, state.Velocity.magnitude, state.Stance == Stance.Crouch);
+        // Update head bobbing: use player's velocity magnitude as speed
+        // and consider crouching if in Crouch or Slide stance
+        bool isCrouching = state.Stance == Stance.Crouch || state.Stance == Stance.Slide;
+        cameraHeadBobbing.UpdateHeadBobbing(Time.deltaTime, state.Velocity.magnitude, isCrouching);
 
         var characterInput = new CharacterInput
         {
@@ -61,20 +66,6 @@ public class Player : MonoBehaviour
         };
         playerCharacter.UpdateInput(characterInput);
         playerCharacter.UpdateBody(deltaTime);
-
-        // Remove or comment out the debug teleport block to prevent unintended teleportation:
-        /*
-        #if UNITY_EDITOR
-        if (Keyboard.current.tKey.wasPressedThisFrame)
-        {
-            var ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-            if (Physics.Raycast(ray, out var hit))
-            {
-                Teleport(hit.point);
-            }
-        }
-        #endif
-        */
     }
 
     public void Teleport(Vector3 position)

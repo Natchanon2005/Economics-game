@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 3
   tags:
   - OutlineTag
+  - Outline
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Outline
   - Water
   - UI
   - 

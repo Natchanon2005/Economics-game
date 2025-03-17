@@ -1,8 +1,11 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] public float money = 0;
+    [SerializeField] private TMP_Text moneyText;
     [SerializeField] private PlayerCharacter playerCharacter;
     [SerializeField] private PlayerCamera playerCamera;
     [Space]
@@ -66,6 +69,7 @@ public class Player : MonoBehaviour
         };
         playerCharacter.UpdateInput(characterInput);
         playerCharacter.UpdateBody(deltaTime);
+        UpdateMoney();
     }
 
     public void Teleport(Vector3 position)
@@ -91,5 +95,23 @@ public class Player : MonoBehaviour
     public void SetSlideEnabled(bool enabled)
     {
         playerCharacter.SetSlideEnabled(enabled);
+    }
+
+    public void BuyItem(float cost)
+    {
+        if (money >= cost)
+        {
+            money -= cost;
+            Debug.Log($"Item bought for {cost}. Remaining money: {money}");
+        }
+        else
+        {
+            Debug.Log("Not enough money to buy item.");
+        }
+    }
+
+    public void UpdateMoney()
+    {
+        moneyText.text = money + " บาท";
     }
 }

@@ -1,5 +1,27 @@
 {
   "dependencies": {
+    "com.phengine.thaitextcare": {
+      "version": "https://github.com/phanphantz/ThaiTextCare-for-Unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7395fa7a42b4eb786401003e96cfdb042984cf1a"
+    },
+    "com.unify.unified-universal-blur": {
+      "version": "https://github.com/lukakldiashvili/Unified-Universal-Blur.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.render-pipelines.universal": "17.0.3"
+      },
+      "hash": "4c63053c02f387dff3546dd320661e4f89b1c86c"
+    },
+    "com.unity.2d.sprite": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.5",
       "depth": 0,

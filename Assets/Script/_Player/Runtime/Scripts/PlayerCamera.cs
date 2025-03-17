@@ -1,18 +1,29 @@
-using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public struct CameraInput
 {
     public Vector2 Look;
 }
 
+public enum DepthOfFieldState
+{
+    Enabled,
+    Disabled
+}
+
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private float sensitivity = 0.1f;
-    private Vector3 _eulerAngles;
+    private Vector3 _eulerAngles;      // เก็บมุมเริ่มต้นของกล้อง
+
+    private OutlineManager currentOutline;
+    private DepthOfField depthOfField;
     
-    // New field for current Outline
-    private Outline currentOutline;
+    [SerializeField] private Volume globalVolume;
+    [SerializeField] public bool allowCameraControl = true;
+    [SerializeField] private Camera _camera;
 
     public void Initialize(Transform target)
     {
@@ -22,8 +33,31 @@ public class PlayerCamera : MonoBehaviour
         transform.eulerAngles = _eulerAngles;
     }
 
+    private void Start()
+    {
+        if (globalVolume != null && globalVolume.profile.TryGet(out depthOfField))
+        {
+            // DepthOfField retrieved successfully
+        }
+    }
+
+    public void SetDepthOfField(DepthOfFieldState state)
+    {
+        if (depthOfField != null)
+        {
+            depthOfField.active = state == DepthOfFieldState.Enabled;
+        }
+    }
+
+    public void SetCameraControl(bool allow)
+    {
+        allowCameraControl = allow;
+    }
+
+    // ฟังก์ชันสำหรับรับค่า input ภายนอก (ถ้ามี)
     public void UpdateRotation(CameraInput input)
     {
+        if (!allowCameraControl) return;
         _eulerAngles += new Vector3(-input.Look.y, input.Look.x) * sensitivity;
         transform.eulerAngles = _eulerAngles;
     }
@@ -32,45 +66,40 @@ public class PlayerCamera : MonoBehaviour
     {
         transform.position = target.position;
     }
-    
-    // New method to update outline based on camera view
+
     void Update()
     {
-        // Cast a ray from camera's position in its forward direction
-        Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit,  5f))
+        if (allowCameraControl)
         {
-            Outline outline = hit.transform.GetComponent<Outline>();
-            if (outline != null)
+
+            // ตรวจเช็ค Raycast สำหรับ Outline
+            Ray ray = new Ray(transform.position, transform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, 5f) && hit.transform.CompareTag("Outline"))
             {
-                // If a new Outline is hit, disable the previous one
-                if (currentOutline != outline)
+                OutlineManager om = hit.transform.GetComponent<OutlineManager>();
+
+                if (om != null && om != currentOutline)
                 {
-                    if (currentOutline != null)
-                    {
-                        currentOutline.enabled = false;
-                    }
-                    currentOutline = outline;
+                    // ถ้าเจอ OutlineManager ใหม่ ให้รีเซ็ทอันเก่า
+                    ResetOutline();
+                    currentOutline = om;
+                    currentOutline.useDefaultSize = false;
                 }
-                currentOutline.enabled = true;
             }
             else
             {
-                if (currentOutline != null)
-                {
-                    currentOutline.enabled = false;
-                    currentOutline = null;
-                }
+                // ถ้าไม่เจออะไร ให้รีเซ็ทค่า defaultSize
+                ResetOutline();
             }
         }
-        else
+    }
+
+    void ResetOutline()
+    {
+        if (currentOutline != null)
         {
-            if (currentOutline != null)
-            {
-                currentOutline.enabled = false;
-                currentOutline = null;
-            }
+            currentOutline.useDefaultSize = true;
+            currentOutline = null;
         }
     }
 }

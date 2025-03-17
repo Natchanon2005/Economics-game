@@ -67,8 +67,8 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     [SerializeField] private float standCameraTargetHeight = 0.9f;
     [Range(0f, 1f)]
     [SerializeField] private float crouchCameraTargetHeight = 0.7f;
-    [SerializeField] private bool movementEnabled = true;
-    [SerializeField] private bool jumpEnabled = true;
+    [SerializeField] public bool movementEnabled = true;
+    [SerializeField] public bool jumpEnabled = true;
     [SerializeField] private bool crouchEnabled = true;
     [SerializeField] private bool slideEnabled = true;
 
@@ -194,7 +194,12 @@ public class PlayerCharacter : MonoBehaviour, ICharacterController
     // ฟังก์ชันสำหรับการอัปเดตความเร็วของตัวละครตามอินพุตและสถานะ
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        if (!movementEnabled) return;
+        if (!movementEnabled)
+        {
+            // Reset velocity when movement is disabled
+            currentVelocity = Vector3.zero;
+            return;
+        }
         _state.Acceleration = Vector3.zero;
         if (motor.GroundingStatus.IsStableOnGround)
         {

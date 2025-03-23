@@ -20,9 +20,13 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private float randomEventInterval = 60f; // Interval in seconds for random events
     [SerializeField] private float inflationPercentage = 10f; // Percentage for inflation
     [SerializeField] private float deflationPercentage = 10f; // Percentage for deflation
+    [SerializeField] private TMP_Text economicStateText; // UI text to display the current economic state
+    [SerializeField] private Color deflationColor;
+    [SerializeField] private Color inflationColor;
 
     void Start()
     {
+        economicStateText.text = $"สถานะ : ปกติ";
         LoadItems(selectedCategory);
         InvokeRepeating(nameof(TriggerRandomEvent), randomEventInterval, randomEventInterval);
     }
@@ -90,9 +94,14 @@ public class ShopManager : MonoBehaviour
         ItemData[] allItemsInResources = Resources.LoadAll<ItemData>("Items");
         foreach (var item in allItemsInResources)
         {
-            item.price = Mathf.CeilToInt(item.price * (1 + percentage / 100f));
+            item.price = Mathf.CeilToInt(item.defaultprice * (1 + percentage / 100f)); // Use defaultprice as the base
         }
         LoadItems(selectedCategory); // Refresh UI to reflect new prices
+        if (economicStateText != null)
+        {
+            economicStateText.text = $"สถานะ : เงินเฟ้อ ({percentage}%)";
+            economicStateText.color = inflationColor;
+        }
     }
 
     // Adjust item prices for deflation across all categories
@@ -101,10 +110,15 @@ public class ShopManager : MonoBehaviour
         ItemData[] allItemsInResources = Resources.LoadAll<ItemData>("Items");
         foreach (var item in allItemsInResources)
         {
-            item.price = Mathf.CeilToInt(item.price * (1 - percentage / 100f));
+            item.price = Mathf.CeilToInt(item.defaultprice * (1 - percentage / 100f)); // Use defaultprice as the base
             if (item.price < 1) item.price = 1; // Ensure price doesn't drop below 1
         }
         LoadItems(selectedCategory); // Refresh UI to reflect new prices
+        if (economicStateText != null)
+        {
+            economicStateText.text = $"สถานะ : เงินฝืด ({percentage}%)";
+            economicStateText.color = deflationColor;
+        }
     }
 
     public float GetInflationMultiplier()

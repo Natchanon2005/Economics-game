@@ -13,6 +13,7 @@ public class ItemData : ScriptableObject
 {
     public string itemName;
     public int price;
+    public int defaultprice;
     public ItemCategory category;
     public Sprite icon;
     public int amount;

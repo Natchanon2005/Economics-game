@@ -271,6 +271,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenBank"",
+                    ""type"": ""Button"",
+                    ""id"": ""2f93bb36-8e67-49dc-b35f-65e54cabbe13"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenHowTo"",
+                    ""type"": ""Button"",
+                    ""id"": ""8971da36-2240-44ae-9b54-a5c30cf0f3fa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -295,6 +313,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""OpenOrder"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a37181c-a6ce-46cf-8270-228fd16f628a"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenBank"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8401754b-8b94-4742-ad3a-968ef5336a0c"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenHowTo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -312,6 +352,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_OpenStore = m_UI.FindAction("OpenStore", throwIfNotFound: true);
         m_UI_OpenOrder = m_UI.FindAction("OpenOrder", throwIfNotFound: true);
+        m_UI_OpenBank = m_UI.FindAction("OpenBank", throwIfNotFound: true);
+        m_UI_OpenHowTo = m_UI.FindAction("OpenHowTo", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -535,6 +577,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_OpenStore;
     private readonly InputAction m_UI_OpenOrder;
+    private readonly InputAction m_UI_OpenBank;
+    private readonly InputAction m_UI_OpenHowTo;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -554,6 +598,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/OpenOrder".
         /// </summary>
         public InputAction @OpenOrder => m_Wrapper.m_UI_OpenOrder;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/OpenBank".
+        /// </summary>
+        public InputAction @OpenBank => m_Wrapper.m_UI_OpenBank;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/OpenHowTo".
+        /// </summary>
+        public InputAction @OpenHowTo => m_Wrapper.m_UI_OpenHowTo;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -586,6 +638,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenOrder.started += instance.OnOpenOrder;
             @OpenOrder.performed += instance.OnOpenOrder;
             @OpenOrder.canceled += instance.OnOpenOrder;
+            @OpenBank.started += instance.OnOpenBank;
+            @OpenBank.performed += instance.OnOpenBank;
+            @OpenBank.canceled += instance.OnOpenBank;
+            @OpenHowTo.started += instance.OnOpenHowTo;
+            @OpenHowTo.performed += instance.OnOpenHowTo;
+            @OpenHowTo.canceled += instance.OnOpenHowTo;
         }
 
         /// <summary>
@@ -603,6 +661,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenOrder.started -= instance.OnOpenOrder;
             @OpenOrder.performed -= instance.OnOpenOrder;
             @OpenOrder.canceled -= instance.OnOpenOrder;
+            @OpenBank.started -= instance.OnOpenBank;
+            @OpenBank.performed -= instance.OnOpenBank;
+            @OpenBank.canceled -= instance.OnOpenBank;
+            @OpenHowTo.started -= instance.OnOpenHowTo;
+            @OpenHowTo.performed -= instance.OnOpenHowTo;
+            @OpenHowTo.canceled -= instance.OnOpenHowTo;
         }
 
         /// <summary>
@@ -700,5 +764,19 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenOrder(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenBank" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenBank(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenHowTo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenHowTo(InputAction.CallbackContext context);
     }
 }

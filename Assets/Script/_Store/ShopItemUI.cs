@@ -19,7 +19,7 @@ public class ShopItemUI : MonoBehaviour
     {
         this.item = item;
         itemNameText.text = item.itemName;
-        priceText.text = item.price.ToString() + " Gold";
+        priceText.text = item.price.ToString() + " บาท";
         iconImage.sprite = item.icon;
         this.shopManager = shopManager;
         this.inventory = inventory;

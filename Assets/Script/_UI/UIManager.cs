@@ -51,6 +51,26 @@ public class UIManager : MonoBehaviour
     [SerializeField] private bool buyOpen = false;
     [SerializeField] private ItemData itemData;
 
+    [Header("Bank Panel")]
+    [SerializeField] private GameObject bankPanel;
+    [SerializeField] private Vector2 bankAnimationAfter;
+    [SerializeField] private Vector2 bankAnimationBefore;
+    [SerializeField] private float bankDuration = 1f;
+    [SerializeField] private bool bankOpen = false;
+
+    [Header("Coffee Panel")]
+    [SerializeField] private GameObject coffeePanel;
+    [SerializeField] private Vector2 coffeeAnimationAfter;
+    [SerializeField] private Vector2 coffeeAnimationBefore;
+    [SerializeField] private float coffeeDuration = 1f;
+    [SerializeField] private bool coffeeOpen = false;
+
+    [Header("How To Panel")]
+    [SerializeField] private GameObject howToPanel;
+    [SerializeField] private Vector2 howToAnimationAfter;
+    [SerializeField] private Vector2 howToAnimationBefore;
+    [SerializeField] private float howToDuration = 1f;
+    [SerializeField] private bool howToOpen = false;
 
     [SerializeField] public Inventory Inventory; // Expose Inventory
     [SerializeField] public ShopManager ShopManager; // Expose ShopManager
@@ -70,9 +90,14 @@ public class UIManager : MonoBehaviour
         shopPanel.SetActive(shopOpen);
         orderPanel.SetActive(orderOpen);
         buyPanel.SetActive(buyOpen);
+        bankPanel.SetActive(bankOpen);
+        coffeePanel.SetActive(coffeeOpen);
+        howToPanel.SetActive(howToOpen);
 
         // Bind the ToggleShop function to the OpenStore action
         _input.OpenStore.performed += ctx => ToggleShop();
+        _input.OpenBank.performed += ctx => ToggleBankPanel();
+        _input.OpenHowTo.performed += ctx => ToggleHowToPanel();
     }
 
     public void AnimateUI(GameObject panel, bool open, Vector2 targetPosition, float duration)
@@ -219,5 +244,62 @@ public class UIManager : MonoBehaviour
                 setting.canvasGroup.blocksRaycasts = false;
             });
         }
+    }
+
+    public void ToggleBankPanel()
+    {
+        if (Time.time - lastAnimationTime < animationCooldown || isAnimating || shopOpen || orderOpen || buyOpen) return;
+        lastAnimationTime = Time.time;
+
+        bankOpen = !bankOpen;
+        bool isBankClosed = !bankOpen;
+
+        cameraHeadBobbing.enabled = isBankClosed;
+        playerCamera.SetCameraControl(isBankClosed);
+        playerCamera.LockState = bankOpen ? LockState.None : LockState.Lock;
+        playerCamera.VisibleState = bankOpen ? VisibleState.Hidden : VisibleState.Show;
+        playerCharacter.SetMovementEnabled(isBankClosed);
+        playerCharacter.SetJumpEnabled(isBankClosed);
+        playerCharacter.SetCrouchEnabled(isBankClosed);
+        AnimateUI(bankPanel, bankOpen, bankOpen ? bankAnimationAfter : bankAnimationBefore, bankDuration);
+        playerCamera.SetDepthOfField(bankOpen ? DepthOfFieldState.Enabled : DepthOfFieldState.Disabled);
+    }
+
+    public void ToggleCoffeePanel()
+    {
+        if (Time.time - lastAnimationTime < animationCooldown || isAnimating || shopOpen || orderOpen || buyOpen || bankOpen) return;
+        lastAnimationTime = Time.time;
+
+        coffeeOpen = !coffeeOpen;
+        bool isCoffeeClosed = !coffeeOpen;
+
+        cameraHeadBobbing.enabled = isCoffeeClosed;
+        playerCamera.SetCameraControl(isCoffeeClosed);
+        playerCamera.LockState = coffeeOpen ? LockState.None : LockState.Lock;
+        playerCamera.VisibleState = coffeeOpen ? VisibleState.Hidden : VisibleState.Show;
+        playerCharacter.SetMovementEnabled(isCoffeeClosed);
+        playerCharacter.SetJumpEnabled(isCoffeeClosed);
+        playerCharacter.SetCrouchEnabled(isCoffeeClosed);
+        AnimateUI(coffeePanel, coffeeOpen, coffeeOpen ? coffeeAnimationAfter : coffeeAnimationBefore, coffeeDuration);
+        playerCamera.SetDepthOfField(coffeeOpen ? DepthOfFieldState.Enabled : DepthOfFieldState.Disabled);
+    }
+
+    public void ToggleHowToPanel()
+    {
+        if (Time.time - lastAnimationTime < animationCooldown || isAnimating || shopOpen || orderOpen || buyOpen || bankOpen || coffeeOpen) return;
+        lastAnimationTime = Time.time;
+
+        howToOpen = !howToOpen;
+        bool isHowToClosed = !howToOpen;
+
+        cameraHeadBobbing.enabled = isHowToClosed;
+        playerCamera.SetCameraControl(isHowToClosed);
+        playerCamera.LockState = howToOpen ? LockState.None : LockState.Lock;
+        playerCamera.VisibleState = howToOpen ? VisibleState.Hidden : VisibleState.Show;
+        playerCharacter.SetMovementEnabled(isHowToClosed);
+        playerCharacter.SetJumpEnabled(isHowToClosed);
+        playerCharacter.SetCrouchEnabled(isHowToClosed);
+        AnimateUI(howToPanel, howToOpen, howToOpen ? howToAnimationAfter : howToAnimationBefore, howToDuration);
+        playerCamera.SetDepthOfField(howToOpen ? DepthOfFieldState.Enabled : DepthOfFieldState.Disabled);
     }
 }

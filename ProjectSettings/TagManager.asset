@@ -8,6 +8,7 @@ TagManager:
   - Outline
   - Customer
   - Product
+  - counter
   layers:
   - Default
   - TransparentFX

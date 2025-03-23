@@ -109,7 +109,8 @@ public class PlayerCamera : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, 5f) && 
                 (hit.transform.CompareTag("Outline") || 
                  hit.transform.CompareTag("Customer") || 
-                 hit.transform.CompareTag("Product")))
+                 hit.transform.CompareTag("Product") ||
+                 hit.transform.CompareTag("counter")))
             {
                 OutlineManager om = hit.transform.GetComponent<OutlineManager>();
                 if (hit.transform.CompareTag("Customer"))
@@ -136,6 +137,14 @@ public class PlayerCamera : MonoBehaviour
                     {
                         Product product = hit.transform.GetComponent<Product>();
                         product.AddProduct();
+                    }
+                }
+
+                if (hit.transform.CompareTag("counter"))
+                {
+                    if (_input.OpenOrder.triggered)
+                    {
+                        uIManager.ToggleCoffeePanel();
                     }
                 }
 

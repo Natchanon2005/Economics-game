@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u0E21\u0E32\u0E23\u0E4C\u0E0A\u0E40\u0E21\u0E25\u0E42\u0E25\u0E48"
   price: 2
+  defaultprice: 2
   category: 2
   icon: {fileID: 0}
   amount: 1

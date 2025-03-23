@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private CameraLean cameraLean;
     // Added field for head bobbing integration
     [SerializeField] private CameraHeadBobbing cameraHeadBobbing;
+    [SerializeField] private MoneyManager moneyManager;
 
     private PlayerInputActions _inputActions;
 
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
 
         cameraSpring.Initialize();
         cameraLean.Initialize();
+        moneyManager.Initialize(money, moneyText);
 
         Debug.Log($"Player start position: {playerCharacter.transform.position}");
     }
@@ -69,7 +71,7 @@ public class Player : MonoBehaviour
         };
         playerCharacter.UpdateInput(characterInput);
         playerCharacter.UpdateBody(deltaTime);
-        UpdateMoney();
+        moneyManager.UpdateMoneyDisplay();
     }
 
     public void Teleport(Vector3 position)
@@ -99,19 +101,13 @@ public class Player : MonoBehaviour
 
     public void BuyItem(float cost)
     {
-        if (money >= cost)
+        if (moneyManager.TrySpendMoney(cost))
         {
-            money -= cost;
-            Debug.Log($"Item bought for {cost}. Remaining money: {money}");
+            Debug.Log($"Item bought for {cost}. Remaining money: {moneyManager.CurrentMoney}");
         }
         else
         {
             Debug.Log("Not enough money to buy item.");
         }
-    }
-
-    public void UpdateMoney()
-    {
-        moneyText.text = money + " บาท";
     }
 }

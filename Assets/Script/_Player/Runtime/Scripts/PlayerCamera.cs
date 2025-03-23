@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -13,8 +14,34 @@ public enum DepthOfFieldState
     Disabled
 }
 
+public enum LockState
+{
+    Lock,
+    None
+}
+public enum VisibleState
+{
+    Show,
+    Hidden
+}
+
 public class PlayerCamera : MonoBehaviour
 {
+    [SerializeField] private LockState lockState;
+    [SerializeField] private VisibleState visibleState;
+
+    public LockState LockState
+    {
+        get => lockState;
+        set => lockState = value;
+    }
+
+    public VisibleState VisibleState
+    {
+        get => visibleState;
+        set => visibleState = value;
+    }
+
     [SerializeField] private float sensitivity = 0.1f;
     private Vector3 _eulerAngles;      // เก็บมุมเริ่มต้นของกล้อง
 
@@ -24,6 +51,10 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private Volume globalVolume;
     [SerializeField] public bool allowCameraControl = true;
     [SerializeField] private Camera _camera;
+    [SerializeField] private UIManager uIManager;
+    [SerializeField] private Customer currectCustomer;
+    private PlayerInputActions _inputActions;
+    private PlayerInputActions.UIActions _input;
 
     public void Initialize(Transform target)
     {
@@ -35,10 +66,9 @@ public class PlayerCamera : MonoBehaviour
 
     private void Start()
     {
-        if (globalVolume != null && globalVolume.profile.TryGet(out depthOfField))
-        {
-            // DepthOfField retrieved successfully
-        }
+        _inputActions = new PlayerInputActions();
+        _inputActions.Enable();
+        _input = _inputActions.UI;
     }
 
     public void SetDepthOfField(DepthOfFieldState state)
@@ -69,14 +99,33 @@ public class PlayerCamera : MonoBehaviour
 
     void Update()
     {
+        MpuseState(lockState, visibleState);
+
         if (allowCameraControl)
         {
 
             // ตรวจเช็ค Raycast สำหรับ Outline
             Ray ray = new Ray(transform.position, transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, 5f) && hit.transform.CompareTag("Outline"))
+            if (Physics.Raycast(ray, out RaycastHit hit, 5f) && (hit.transform.CompareTag("Outline") || hit.transform.CompareTag("Customer")))
             {
                 OutlineManager om = hit.transform.GetComponent<OutlineManager>();
+                if (hit.transform.CompareTag("Customer"))
+                {
+                    currectCustomer = hit.transform.GetComponent<Customer>();
+                    if (_input.OpenOrder.triggered)
+                    {
+                        if (currectCustomer != null && !currectCustomer.HasBeenServed)
+                        {
+                            uIManager.ToggleOrderPanel();
+                            currectCustomer.UpdateOrderText();
+                            Debug.Log("OK");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Customer has already been served.");
+                        }
+                    }
+                }
 
                 if (om != null && om != currentOutline)
                 {
@@ -100,6 +149,22 @@ public class PlayerCamera : MonoBehaviour
         {
             currentOutline.useDefaultSize = true;
             currentOutline = null;
+        }
+    }
+
+    public void MpuseState(LockState state, VisibleState visible)
+    {
+        Cursor.lockState = state == LockState.Lock ? CursorLockMode.Locked : CursorLockMode.None;
+        Cursor.visible = visible == VisibleState.Show ? false : true;
+    }
+
+    public void Sell()
+    {
+        if (uIManager.Inventory.SellDrink(currectCustomer.drinkName, uIManager.ShopManager.GetInflationMultiplier(), currectCustomer.amount)) 
+        {
+            uIManager.ToggleOrderPanel();
+            currectCustomer.LeaveQueue();
+            currectCustomer.HasBeenServed = true;
         }
     }
 }

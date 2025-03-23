@@ -262,6 +262,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenOrder"",
+                    ""type"": ""Button"",
+                    ""id"": ""e3e43245-b748-4838-988f-4740e477e8cd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -273,6 +282,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OpenStore"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""493a311d-1d10-4b09-8ffe-75b630defa7e"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenOrder"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -291,6 +311,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_OpenStore = m_UI.FindAction("OpenStore", throwIfNotFound: true);
+        m_UI_OpenOrder = m_UI.FindAction("OpenOrder", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -513,6 +534,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_OpenStore;
+    private readonly InputAction m_UI_OpenOrder;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -528,6 +550,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/OpenStore".
         /// </summary>
         public InputAction @OpenStore => m_Wrapper.m_UI_OpenStore;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/OpenOrder".
+        /// </summary>
+        public InputAction @OpenOrder => m_Wrapper.m_UI_OpenOrder;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -557,6 +583,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenStore.started += instance.OnOpenStore;
             @OpenStore.performed += instance.OnOpenStore;
             @OpenStore.canceled += instance.OnOpenStore;
+            @OpenOrder.started += instance.OnOpenOrder;
+            @OpenOrder.performed += instance.OnOpenOrder;
+            @OpenOrder.canceled += instance.OnOpenOrder;
         }
 
         /// <summary>
@@ -571,6 +600,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenStore.started -= instance.OnOpenStore;
             @OpenStore.performed -= instance.OnOpenStore;
             @OpenStore.canceled -= instance.OnOpenStore;
+            @OpenOrder.started -= instance.OnOpenOrder;
+            @OpenOrder.performed -= instance.OnOpenOrder;
+            @OpenOrder.canceled -= instance.OnOpenOrder;
         }
 
         /// <summary>
@@ -661,5 +693,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenStore(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenOrder" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenOrder(InputAction.CallbackContext context);
     }
 }

@@ -181,6 +181,18 @@ public class PlayerCamera : MonoBehaviour
 
     public void Sell()
     {
+        if (currectCustomer == null)
+        {
+            Debug.LogWarning("Sell failed: currectCustomer is null.");
+            return;
+        }
+
+        if (uIManager == null || uIManager.Inventory == null || uIManager.ShopManager == null)
+        {
+            Debug.LogWarning("Sell failed: UIManager or its dependencies are null.");
+            return;
+        }
+
         if (uIManager.Inventory.SellDrink(currectCustomer.drinkName, uIManager.ShopManager.GetInflationMultiplier(), currectCustomer.amount)) 
         {
             uIManager.ToggleOrderPanel();

@@ -1783,7 +1783,7 @@ GameObject:
   - component: {fileID: 275315926}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: counter
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3792,7 +3792,7 @@ MonoBehaviour:
   playerInventory: {fileID: 7222572590097711879}
   itemCountText: {fileID: 0}
   moneyManager: {fileID: 7222572590097711878}
-  randomEventInterval: 10
+  randomEventInterval: 30
   inflationPercentage: 10
   deflationPercentage: 10
   economicStateText: {fileID: 660889739}
@@ -5859,7 +5859,7 @@ MonoBehaviour:
   howToDuration: 0.5
   howToOpen: 0
   Inventory: {fileID: 7222572590097711879}
-  ShopManager: {fileID: 0}
+  ShopManager: {fileID: 669369786}
 --- !u!1 &1225413266
 GameObject:
   m_ObjectHideFlags: 0
@@ -6579,7 +6579,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1216975879}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ToggleBuyPanelForButton
+        m_MethodName: ToggleBankPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -16,6 +16,6 @@ MonoBehaviour:
   price: 5
   defaultprice: 5
   category: 2
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1d99951cf9b7edd48bc85a603dbf68d2, type: 3}
   amount: 1
   defaultAmount: 1

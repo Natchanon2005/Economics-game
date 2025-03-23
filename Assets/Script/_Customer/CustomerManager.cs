@@ -70,7 +70,7 @@ public class CustomerManager : MonoBehaviour
     {
         if (customers.Remove(customer))
         {
-            AssignQueuePositions(); // Ensure remaining customers move forward
+            AssignQueuePositions();
         }
     }
 }

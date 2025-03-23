@@ -21,7 +21,7 @@ public class Customer : MonoBehaviour
     {
         string[] drinks = { "Black Dragon Brew", "Moonlight Caramel Latte", "Frosted Vanilla Heaven", "Liberica Lava Burst" };
         drinkName = drinks[Random.Range(0, drinks.Length)];
-        amount = Random.Range(1, 10);
+        amount = Random.Range(1, 5);
 
         agent = navMeshAgent;
         if (agent == null)
@@ -30,6 +30,17 @@ public class Customer : MonoBehaviour
             return;
         }
         startPosition = transform.position;
+        ConfigureNavMeshAgent(); // Configure the agent for better avoidance
+    }
+
+    private void ConfigureNavMeshAgent()
+    {
+        if (agent != null)
+        {
+            agent.avoidancePriority = Random.Range(20, 80); // Assign random priority to reduce collisions
+            agent.radius = 0.35f; // Adjust the radius for better pathfinding in narrow spaces
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance; // Use high-quality avoidance
+        }
     }
 
     public void GoToQueue(Vector3 queuePosition)
@@ -47,6 +58,7 @@ public class Customer : MonoBehaviour
         inQueue = false;
         agent?.SetDestination(startPosition); // Use null-conditional operator
         customerManager?.NotifyQueueSpotAvailable(this); // Notify manager if available
+        Destroy(gameObject, 5f);
     }
 
     public bool IsInQueue()

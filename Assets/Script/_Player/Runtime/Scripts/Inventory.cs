@@ -11,6 +11,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] private TMP_Text flavoringText;
     private Dictionary<string, int> drinkCounts = new Dictionary<string, int>();
     [SerializeField] private MoneyManager moneyManager; // Reference to MoneyManager
+    [SerializeField] private UIManager uIManager;
     private Dictionary<string, float> baseDrinkPrices = new Dictionary<string, float>
     {
         { "Black Dragon Brew", 45f },
@@ -63,6 +64,15 @@ public class Inventory : MonoBehaviour
             return categoryItemCounts[item.category][item.itemName];
         }
         return 0;
+    }
+
+    public void Buy(ItemData itemData)
+    {
+        if (moneyManager.TrySpendMoney(itemData.price))
+        {
+            AddItem(itemData, itemData.amount);
+            uIManager.ToggleBuyPanel(itemData);
+        }
     }
 
     private void UpdateCategoryText(ItemCategory category)

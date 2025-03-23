@@ -7,13 +7,16 @@ public class ShopItemUI : MonoBehaviour
     public TMP_Text itemNameText;
     public TMP_Text priceText;
     public Image iconImage;
+    public int defaultAmount;
     private ItemData item;
+    private UIManager uIManager;
     private ShopManager shopManager;
     private Inventory inventory;
     private MoneyManager moneyManager;
+    private bool isInitialized = false; // เพิ่มตัวแปรเพื่อตรวจสอบการตั้งค่า
 
     // ตั้งค่าข้อมูลไอเทมและเชื่อมกับ ShopManager
-    public void Setup(ItemData item, ShopManager shopManager, Inventory inventory, MoneyManager moneyManager)
+    public void Setup(ItemData item, ShopManager shopManager, Inventory inventory, MoneyManager moneyManager, UIManager uIManager)
     {
         this.item = item;
         itemNameText.text = item.itemName;
@@ -22,14 +25,12 @@ public class ShopItemUI : MonoBehaviour
         this.shopManager = shopManager;
         this.inventory = inventory;
         this.moneyManager = moneyManager;
-
+        this.uIManager = uIManager;
     }
 
-    public void BuyItem(int amount)
+    public void BuyItem()
     {
-        if (moneyManager.TrySpendMoney(item.price))
-        {
-            inventory.AddItem(item, amount);
-        }
+        item.amount = defaultAmount;
+        uIManager.ToggleBuyPanel(item);
     }
 }

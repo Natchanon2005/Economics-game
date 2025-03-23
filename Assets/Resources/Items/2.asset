@@ -16,3 +16,5 @@ MonoBehaviour:
   price: 2
   category: 0
   icon: {fileID: 0}
+  amount: 10
+  defaultAmount: 10

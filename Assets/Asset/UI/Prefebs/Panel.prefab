@@ -593,6 +593,7 @@ MonoBehaviour:
   itemNameText: {fileID: 3672041869264920234}
   priceText: {fileID: 1537441877066812282}
   iconImage: {fileID: 932064002533365762}
+  defaultAmount: 0
 --- !u!225 &2914094120725997755
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -652,7 +653,7 @@ MonoBehaviour:
       - m_Target: {fileID: 2008156706011908155}
         m_TargetAssemblyTypeName: ShopItemUI, Assembly-CSharp
         m_MethodName: BuyItem
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

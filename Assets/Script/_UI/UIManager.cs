@@ -2,6 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 using System;
+using TMPro;
 
 [Serializable]
 public class FadeSetting
@@ -37,6 +38,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float orderDuration = 1f;
     [SerializeField] private bool orderOpen = false;
 
+    [Header("Buy Settings")]
+    [SerializeField] private GameObject buyPanel;
+    [SerializeField] private TMP_Text buyName;
+    [SerializeField] private TMP_Text buyAmount;
+    [SerializeField] private Vector2 buyAnimationAfter;
+    [SerializeField] private Vector2 buyAnimationBefore;
+    [SerializeField] private float buyDuration = 1f;
+    [SerializeField] private bool buyOpen = false;
+    [SerializeField] private ItemData itemData;
+
+
     [SerializeField] public Inventory Inventory; // Expose Inventory
     [SerializeField] public ShopManager ShopManager; // Expose ShopManager
 
@@ -54,6 +66,7 @@ public class UIManager : MonoBehaviour
 
         shopPanel.SetActive(shopOpen);
         orderPanel.SetActive(orderOpen);
+        buyPanel.SetActive(buyOpen);
 
         // Bind the ToggleShop function to the OpenStore action
         _input.OpenStore.performed += ctx => ToggleShop();
@@ -88,8 +101,7 @@ public class UIManager : MonoBehaviour
 
     private void ToggleShop()
     {
-        if (isAnimating) return;
-        if (orderOpen) return;
+        if (isAnimating && orderOpen && buyOpen) return;
 
         shopOpen = !shopOpen;
         bool isShopClosed = !shopOpen;
@@ -107,8 +119,7 @@ public class UIManager : MonoBehaviour
 
     public void ToggleOrderPanel()
     {
-        if (isAnimating) return;
-        if (shopOpen) return;
+        if (isAnimating && shopOpen && buyOpen) return;
         orderOpen = !orderOpen;
         bool isOrderClosed = !orderOpen;
 
@@ -121,6 +132,56 @@ public class UIManager : MonoBehaviour
         playerCharacter.SetCrouchEnabled(isOrderClosed);
         AnimateUI(orderPanel, orderOpen, orderOpen ? orderAnimationAfter : orderAnimationBefore, orderDuration);
         playerCamera.SetDepthOfField(orderOpen ? DepthOfFieldState.Enabled : DepthOfFieldState.Disabled);
+    }
+
+    public void ToggleBuyPanel(ItemData itemData)
+    {
+        if (isAnimating && orderOpen) return;
+        this.itemData = itemData;
+        buyName.text = itemData.itemName;
+        UpdateAmount(itemData);
+
+        buyOpen = !buyOpen;
+        bool isBuyClosed = !buyOpen;
+
+        cameraHeadBobbing.enabled = isBuyClosed;
+        playerCamera.SetCameraControl(isBuyClosed);
+        playerCamera.LockState = buyOpen ? LockState.None : LockState.Lock;
+        playerCamera.VisibleState = buyOpen ? VisibleState.Hidden : VisibleState.Show;
+        playerCharacter.SetMovementEnabled(isBuyClosed);
+        playerCharacter.SetJumpEnabled(isBuyClosed);
+        playerCharacter.SetCrouchEnabled(isBuyClosed);
+        AnimateUI(buyPanel, buyOpen, buyOpen ? buyAnimationAfter : buyAnimationBefore, buyDuration);
+        playerCamera.SetDepthOfField(buyOpen ? DepthOfFieldState.Enabled : DepthOfFieldState.Disabled);
+    }
+
+    public void ToggleBuyPanelForButton()
+    {
+        ToggleBuyPanel(itemData);
+    }
+
+    public void UpdateAmount(ItemData itemData)
+    {
+        buyAmount.text = $"{itemData.amount}";
+    }
+
+    public void AddAmount()
+    {
+        itemData.amount += itemData.defaultAmount;
+        UpdateAmount(itemData);
+    }
+
+    public void reduceAmount()
+    {
+        if (itemData.amount <= 0) return; // Prevent negative values
+        itemData.amount -= itemData.defaultAmount;
+        if (itemData.amount < 0) itemData.amount = 0; // Ensure amount is not negative
+        UpdateAmount(itemData);
+    }
+
+    public void BuyItem()
+    {
+        Inventory.Buy(itemData);
     }
 
     private void OnDestroy()

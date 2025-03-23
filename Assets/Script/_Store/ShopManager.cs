@@ -13,6 +13,7 @@ public class ShopManager : MonoBehaviour
     public Vector2 itemSpacing = new Vector2(100, 100); // ระยะห่างระหว่างไอเทม
     public int itemsPerRow = 3; // จำนวนไอเทมต่อแถว
     public Vector2 startPosition = new Vector2(0, 0); // ตำแหน่งเริ่มต้นของไอเทม
+    [SerializeField] private UIManager uIManager;
     [SerializeField] private Inventory playerInventory; // Reference to the player's inventory
     [SerializeField] private TMP_Text itemCountText; // UI text to display item count
     [SerializeField] private MoneyManager moneyManager;
@@ -70,7 +71,7 @@ public class ShopManager : MonoBehaviour
             // สร้าง UI สำหรับแต่ละไอเทม
             var itemObj = Instantiate(itemPrefab, itemContainer);
             var itemUI = itemObj.GetComponent<ShopItemUI>();
-            itemUI.Setup(item, this, playerInventory, moneyManager);
+            itemUI.Setup(item, this, playerInventory, moneyManager, uIManager);
 
             // คำนวณตำแหน่งของไอเทมในกริด
             int row = index / itemsPerRow;

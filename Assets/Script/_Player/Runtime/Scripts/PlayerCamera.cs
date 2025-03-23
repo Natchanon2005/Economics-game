@@ -106,7 +106,10 @@ public class PlayerCamera : MonoBehaviour
 
             // ตรวจเช็ค Raycast สำหรับ Outline
             Ray ray = new Ray(transform.position, transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, 5f) && (hit.transform.CompareTag("Outline") || hit.transform.CompareTag("Customer")))
+            if (Physics.Raycast(ray, out RaycastHit hit, 5f) && 
+                (hit.transform.CompareTag("Outline") || 
+                 hit.transform.CompareTag("Customer") || 
+                 hit.transform.CompareTag("Product")))
             {
                 OutlineManager om = hit.transform.GetComponent<OutlineManager>();
                 if (hit.transform.CompareTag("Customer"))
@@ -124,6 +127,15 @@ public class PlayerCamera : MonoBehaviour
                         {
                             Debug.LogWarning("Customer has already been served.");
                         }
+                    }
+                }
+
+                if (hit.transform.CompareTag("Product"))
+                {
+                    if (_input.OpenOrder.triggered)
+                    {
+                        Product product = hit.transform.GetComponent<Product>();
+                        product.AddProduct();
                     }
                 }
 

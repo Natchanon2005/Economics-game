@@ -8,9 +8,12 @@ public class Delivery : MonoBehaviour
     [SerializeField] private GameObject parenct; // Parent object
     [SerializeField] public Transform targetPoint; // Target point to move toward
     [SerializeField] public DeliveryManager deliveryManager;
+    [SerializeField] private ItemData itemData;
+    [SerializeField] private int amount;
+    [SerializeField] private Inventory inventory;
     private GameObject product;
 
-    public void DeliveryProduct()
+    public void DeliveryProduct(ItemData itemData, int amount, Inventory inventory)
     {
         // Create a new product instance
         GameObject newProduct = Instantiate(productPrefab, productSpawnPoint.position, Quaternion.identity);
@@ -18,6 +21,9 @@ public class Delivery : MonoBehaviour
         newProduct.transform.SetParent(parenct.transform); // Set parent to parenct
 
         // Update the reference to the latest product
+        this.amount = amount;
+        this.itemData = itemData;
+        this.inventory = inventory;
         product = newProduct;
     }
 
@@ -56,6 +62,8 @@ public class Delivery : MonoBehaviour
             {
                 Rigidbody rb = product.AddComponent<Rigidbody>();
                 rb.useGravity = true;
+                Product p = product.AddComponent<Product>();
+                p.SetUp(itemData, amount, inventory);
                 DOTween.Kill(product.transform);
             });
     }

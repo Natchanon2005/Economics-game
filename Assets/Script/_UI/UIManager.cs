@@ -27,6 +27,8 @@ public class UIManager : MonoBehaviour
     private PlayerInputActions _inputActions;
     private PlayerInputActions.UIActions _input;
     private bool isAnimating = false;
+    private float animationCooldown = 0.5f; // Cooldown duration
+    private float lastAnimationTime = 0f;
 
     [Header("Fade Settings")]
     [SerializeField] private List<FadeSetting> fadeSettings;
@@ -42,6 +44,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject buyPanel;
     [SerializeField] private TMP_Text buyName;
     [SerializeField] private TMP_Text buyAmount;
+    [SerializeField] private TMP_Text buyPrice;
     [SerializeField] private Vector2 buyAnimationAfter;
     [SerializeField] private Vector2 buyAnimationBefore;
     [SerializeField] private float buyDuration = 1f;
@@ -101,7 +104,8 @@ public class UIManager : MonoBehaviour
 
     private void ToggleShop()
     {
-        if (isAnimating && orderOpen && buyOpen) return;
+        if (Time.time - lastAnimationTime < animationCooldown || isAnimating || orderOpen || buyOpen) return;
+        lastAnimationTime = Time.time;
 
         shopOpen = !shopOpen;
         bool isShopClosed = !shopOpen;
@@ -119,7 +123,9 @@ public class UIManager : MonoBehaviour
 
     public void ToggleOrderPanel()
     {
-        if (isAnimating && shopOpen && buyOpen) return;
+        if (Time.time - lastAnimationTime < animationCooldown || isAnimating || shopOpen || buyOpen) return;
+        lastAnimationTime = Time.time;
+
         orderOpen = !orderOpen;
         bool isOrderClosed = !orderOpen;
 
@@ -136,23 +142,15 @@ public class UIManager : MonoBehaviour
 
     public void ToggleBuyPanel(ItemData itemData)
     {
-        if (isAnimating && orderOpen) return;
+        if (Time.time - lastAnimationTime < animationCooldown || isAnimating || orderOpen) return;
+        lastAnimationTime = Time.time;
+
         this.itemData = itemData;
         buyName.text = itemData.itemName;
         UpdateAmount(itemData);
-
         buyOpen = !buyOpen;
-        bool isBuyClosed = !buyOpen;
 
-        cameraHeadBobbing.enabled = isBuyClosed;
-        playerCamera.SetCameraControl(isBuyClosed);
-        playerCamera.LockState = buyOpen ? LockState.None : LockState.Lock;
-        playerCamera.VisibleState = buyOpen ? VisibleState.Hidden : VisibleState.Show;
-        playerCharacter.SetMovementEnabled(isBuyClosed);
-        playerCharacter.SetJumpEnabled(isBuyClosed);
-        playerCharacter.SetCrouchEnabled(isBuyClosed);
         AnimateUI(buyPanel, buyOpen, buyOpen ? buyAnimationAfter : buyAnimationBefore, buyDuration);
-        playerCamera.SetDepthOfField(buyOpen ? DepthOfFieldState.Enabled : DepthOfFieldState.Disabled);
     }
 
     public void ToggleBuyPanelForButton()
@@ -162,6 +160,8 @@ public class UIManager : MonoBehaviour
 
     public void UpdateAmount(ItemData itemData)
     {
+        int amountforprice = itemData.amount / itemData.defaultAmount;
+        buyPrice.text = $"ราคา {itemData.price * amountforprice}"; // Fix calculation
         buyAmount.text = $"{itemData.amount}";
     }
 
@@ -191,11 +191,7 @@ public class UIManager : MonoBehaviour
 
     public void FadeIn(List<FadeSetting> fadeSettings)
     {
-        if (fadeSettings == null || fadeSettings.Count == 0)
-        {
-            Debug.LogWarning("Invalid input for FadeIn. Ensure the list is non-null and contains elements.");
-            return;
-        }
+        if (fadeSettings == null || fadeSettings.Count == 0) return;
 
         foreach (var setting in fadeSettings)
         {
@@ -203,22 +199,15 @@ public class UIManager : MonoBehaviour
 
             setting.canvasGroup.DOFade(1f, setting.duration).SetDelay(setting.delay).OnStart(() =>
             {
-                if (setting.canvasGroup != null) // Check if CanvasGroup is still valid
-                {
-                    setting.canvasGroup.interactable = true;
-                    setting.canvasGroup.blocksRaycasts = true;
-                }
+                setting.canvasGroup.interactable = true;
+                setting.canvasGroup.blocksRaycasts = true;
             });
         }
     }
 
     public void FadeOut(List<FadeSetting> fadeSettings)
     {
-        if (fadeSettings == null || fadeSettings.Count == 0)
-        {
-            Debug.LogWarning("Invalid input for FadeOut. Ensure the list is non-null and contains elements.");
-            return;
-        }
+        if (fadeSettings == null || fadeSettings.Count == 0) return;
 
         foreach (var setting in fadeSettings)
         {
@@ -226,11 +215,8 @@ public class UIManager : MonoBehaviour
 
             setting.canvasGroup.DOFade(0f, setting.duration).SetDelay(setting.delay).OnComplete(() =>
             {
-                if (setting.canvasGroup != null) // Check if CanvasGroup is still valid
-                {
-                    setting.canvasGroup.interactable = false;
-                    setting.canvasGroup.blocksRaycasts = false;
-                }
+                setting.canvasGroup.interactable = false;
+                setting.canvasGroup.blocksRaycasts = false;
             });
         }
     }

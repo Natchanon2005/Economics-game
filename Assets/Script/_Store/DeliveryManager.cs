@@ -8,8 +8,9 @@ public class DeliveryManager : MonoBehaviour
     public Transform targetPoint; // Target point to move toward
     public List<Vector3> spawnPoint; // Spawn point
     private List<Delivery> deliveries = new List<Delivery>(); // List to store multiple deliveries
+    [SerializeField] private Inventory inventory;
 
-    public void SpawnDelivery()
+    public void SpawnDelivery(ItemData itemData, int amount)
     {
         // Randomly select a spawn point from the list
         Vector3 selectedSpawnPoint = spawnPoint[Random.Range(0, spawnPoint.Count)];
@@ -25,7 +26,7 @@ public class DeliveryManager : MonoBehaviour
             delivery = obj.AddComponent<Delivery>();
         }
 
-        delivery.DeliveryProduct();
+        delivery.DeliveryProduct(itemData, amount, inventory);
         delivery.deliveryManager = this;
         delivery.targetPoint = targetPoint;
 

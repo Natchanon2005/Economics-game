@@ -34,9 +34,7 @@ public class MoneyManager : MonoBehaviour
 
     public void UpdateMoneyDisplay()
     {
-        if (moneyText != null)
-        {
-            moneyText.text = $"{currentMoney} บาท";
-        }
+        if (moneyText == null) return;
+        moneyText.text = $"{Mathf.RoundToInt(currentMoney)} บาท";
     }
 }

@@ -9,9 +9,11 @@ public class Inventory : MonoBehaviour
     [SerializeField] private TMP_Text milkText;
     [SerializeField] private TMP_Text toppingText;
     [SerializeField] private TMP_Text flavoringText;
+    [SerializeField] private TMP_Text drinkText;
     private Dictionary<string, int> drinkCounts = new Dictionary<string, int>();
     [SerializeField] private MoneyManager moneyManager; // Reference to MoneyManager
     [SerializeField] private UIManager uIManager;
+    [SerializeField] private DeliveryManager deliveryManager;
     private Dictionary<string, float> baseDrinkPrices = new Dictionary<string, float>
     {
         { "Black Dragon Brew", 45f },
@@ -68,38 +70,37 @@ public class Inventory : MonoBehaviour
 
     public void Buy(ItemData itemData)
     {
-        if (moneyManager.TrySpendMoney(itemData.price))
+        int amountforprice = itemData.amount / itemData.defaultAmount;
+        if (moneyManager.TrySpendMoney(itemData.price * amountforprice))
         {
-            AddItem(itemData, itemData.amount);
+            // AddItem(itemData, itemData.amount);
+            deliveryManager.SpawnDelivery(itemData, itemData.amount);
             uIManager.ToggleBuyPanel(itemData);
         }
     }
 
     private void UpdateCategoryText(ItemCategory category)
     {
-        string text = "";
+        var stringBuilder = new System.Text.StringBuilder();
         foreach (var item in categoryItemCounts[category])
         {
-            text += $"{item.Key}: {item.Value}\n";
+            stringBuilder.AppendLine($"{item.Key}: {item.Value}");
         }
 
+        string text = stringBuilder.ToString();
         switch (category)
         {
             case ItemCategory.Coffee_beans:
-                if (coffeeBeansText != null)
-                    coffeeBeansText.text = text;
+                if (coffeeBeansText != null) coffeeBeansText.text = text;
                 break;
             case ItemCategory.Milk:
-                if (milkText != null)
-                    milkText.text = text;
+                if (milkText != null) milkText.text = text;
                 break;
             case ItemCategory.Topping:
-                if (toppingText != null)
-                    toppingText.text = text;
+                if (toppingText != null) toppingText.text = text;
                 break;
             case ItemCategory.Flavoring:
-                if (flavoringText != null)
-                    flavoringText.text = text;
+                if (flavoringText != null) flavoringText.text = text;
                 break;
         }
     }
@@ -131,12 +132,10 @@ public class Inventory : MonoBehaviour
         // Check if all ingredients are available
         foreach (var ingredient in requiredIngredients)
         {
-            ItemData item = ScriptableObject.CreateInstance<ItemData>();
-            item.itemName = ingredient.Key;
-            item.category = GetCategoryForItem(ingredient.Key);
-            if (GetItemCount(item) < ingredient.Value)
+            int currentCount = GetItemCount(new ItemData { itemName = ingredient.Key, category = GetCategoryForItem(ingredient.Key) });
+            if (currentCount < ingredient.Value)
             {
-                Debug.LogWarning($"Not enough {ingredient.Key} to create {drinkName}. Current count: {GetItemCount(item)}, Required: {ingredient.Value}");
+                Debug.LogWarning($"Not enough {ingredient.Key} to create {drinkName}. Current count: {currentCount}, Required: {ingredient.Value}");
                 return false;
             }
         }
@@ -144,10 +143,7 @@ public class Inventory : MonoBehaviour
         // Deduct ingredients
         foreach (var ingredient in requiredIngredients)
         {
-            ItemData item = ScriptableObject.CreateInstance<ItemData>();
-            item.itemName = ingredient.Key;
-            item.category = GetCategoryForItem(ingredient.Key);
-            AddItem(item, -ingredient.Value);
+            AddItem(new ItemData { itemName = ingredient.Key, category = GetCategoryForItem(ingredient.Key) }, -ingredient.Value);
         }
 
         // Increment drink count
@@ -160,6 +156,9 @@ public class Inventory : MonoBehaviour
 
         // Update the serialized list for the editor
         UpdateDrinkCountList();
+
+        // Update drink text
+        UpdateDrinkText();
 
         return true;
     }
@@ -279,6 +278,22 @@ public class Inventory : MonoBehaviour
         // Update the serialized list for the editor
         UpdateDrinkCountList();
 
+        // Update drink text
+        UpdateDrinkText();
+
         return true;
+    }
+
+    private void UpdateDrinkText()
+    {
+        if (drinkText != null)
+        {
+            var stringBuilder = new System.Text.StringBuilder();
+            foreach (var drink in drinkCounts)
+            {
+                stringBuilder.AppendLine($"{drink.Key}: {drink.Value}x");
+            }
+            drinkText.text = stringBuilder.ToString();
+        }
     }
 }

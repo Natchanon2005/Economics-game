@@ -30,67 +30,46 @@ public class ShopManager : MonoBehaviour
     // โหลดข้อมูล ItemData จาก Resources ตามหมวดหมู่
     void LoadItems(ItemCategory category)
     {
-        // โหลดทุกไฟล์ ItemData จากโฟลเดอร์ Resources/Items
         ItemData[] items = Resources.LoadAll<ItemData>("Items");
-
-        // กรองข้อมูลตามหมวดหมู่
         allItems = items.Where(item => item.category == category).ToList();
 
-        // ลบ UI เดิมทั้งหมด พร้อม fade out
         foreach (Transform child in itemContainer)
         {
-            if (child == null) continue; // Ensure the child is not null
+            if (child == null) continue;
 
             var canvasGroup = child.GetComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
-                // Kill any existing DOTween animations on the canvasGroup
                 canvasGroup.DOKill();
-
-                canvasGroup.DOFade(0f, 0.5f).OnComplete(() =>
-                {
-                    if (child != null) // Check again if the object still exists
-                    {
-                        Destroy(child.gameObject);
-                    }
-                });
+                canvasGroup.DOFade(0f, 0.5f).OnComplete(() => Destroy(child?.gameObject));
             }
             else
             {
-                if (child != null) // Check if the object still exists
-                {
-                    Destroy(child.gameObject);
-                }
+                Destroy(child?.gameObject);
             }
         }
 
-        // สร้าง UI สำหรับแต่ละไอเทม
-        int index = 0; // ตัวนับตำแหน่งไอเทม
+        int index = 0;
         foreach (var item in allItems)
         {
-            // สร้าง UI สำหรับแต่ละไอเทม
             var itemObj = Instantiate(itemPrefab, itemContainer);
             var itemUI = itemObj.GetComponent<ShopItemUI>();
             itemUI.Setup(item, this, playerInventory, moneyManager, uIManager);
 
-            // คำนวณตำแหน่งของไอเทมในกริด
             int row = index / itemsPerRow;
             int column = index % itemsPerRow;
             Vector2 itemPosition = startPosition + new Vector2(column * itemSpacing.x, -row * itemSpacing.y);
 
-            // ตั้งค่าตำแหน่งของ UI ไอเทม
-            itemObj.GetComponent<RectTransform>().anchoredPosition = itemPosition;
+            var rectTransform = itemObj.GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = itemPosition;
 
-            // เพิ่ม fade in effect
             var canvasGroup = itemObj.GetComponent<CanvasGroup>();
             canvasGroup.alpha = 0f;
             canvasGroup.DOFade(1f, 0.5f);
 
-            // Update item count in the shop UI
             if (playerInventory != null && itemCountText != null)
             {
-                int itemCount = playerInventory.GetItemCount(item);
-                itemCountText.text = $"Owned: {itemCount}";
+                itemCountText.text = $"Owned: {playerInventory.GetItemCount(item)}";
             }
 
             index++;

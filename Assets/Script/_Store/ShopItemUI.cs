@@ -13,7 +13,6 @@ public class ShopItemUI : MonoBehaviour
     private ShopManager shopManager;
     private Inventory inventory;
     private MoneyManager moneyManager;
-    private bool isInitialized = false; // เพิ่มตัวแปรเพื่อตรวจสอบการตั้งค่า
 
     // ตั้งค่าข้อมูลไอเทมและเชื่อมกับ ShopManager
     public void Setup(ItemData item, ShopManager shopManager, Inventory inventory, MoneyManager moneyManager, UIManager uIManager)

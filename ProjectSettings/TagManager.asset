@@ -7,6 +7,7 @@ TagManager:
   - OutlineTag
   - Outline
   - Customer
+  - Product
   layers:
   - Default
   - TransparentFX
